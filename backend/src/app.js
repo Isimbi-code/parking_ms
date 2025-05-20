@@ -23,20 +23,16 @@ prismaClient.$connect()
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-const vehicleRoutes = require('./routes/vehicleRoutes');
-const slotRoutes = require('./routes/slotRoutes');
-const requestRoutes = require('./routes/requestRoutes');
+const carRoutes = require('./routes/carRoutes');
+const parkingRoutes = require('./routes/parkingRoutes');
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/vehicles', vehicleRoutes);
-app.use('/api/slots', slotRoutes);
-app.use('/api/requests', requestRoutes);
+app.use('/api/cars', carRoutes);
+app.use('/api/parkings', parkingRoutes);
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'OK', timestamp: new Date() });
-});
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {

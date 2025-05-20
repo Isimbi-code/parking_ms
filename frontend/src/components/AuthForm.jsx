@@ -21,17 +21,11 @@ const AuthForm = () => {
     try {
       if (isLogin) {
         const { data } = await login(formData)
-        if (data.requiresVerification) {
-          navigate('/verify', { state: { email: formData.email } })
-        } else {
-          localStorage.setItem('token', data.token)
-          console.log('Token stored, navigating to /')
-          navigate('/')
-        }
+        localStorage.setItem('token', data.token)
       } else {
         await register(formData)
         toast.success('Registration successful! Check your email for OTP.')
-        navigate('/verify', { state: { email: formData.email } })
+        navigate('/', { state: { email: formData.email } })
       }
     } catch (error) {
       toast.error(error.response?.data?.error || 'Something went wrong')
@@ -95,13 +89,11 @@ const AuthForm = () => {
             {isLogin ? 'Register' : 'Login'}
           </button>
         </p>
-        {isLogin && (
-          <p className="mt-2 text-center">
-            <Link to="/verify" className="text-blue-500 hover:underline">
-              Verify Account
-            </Link>
-          </p>
-        )}
+        <p className="mt-4 text-center">
+          <Link to="/forgot-password" className="text-blue-500 hover:underline">
+            Forgot Password?
+          </Link>
+        </p>
       </div>
     </div>
   )

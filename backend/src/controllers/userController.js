@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { hashPassword, logAction } = require('../utils/auth');
+const { hashPassword} = require('../utils/auth');
+const { logAction } = require('../utils/logger')
 
 // Get all users (admin only)
 exports.getAllUsers = async (req, res) => {
@@ -67,7 +68,7 @@ exports.updateProfile = async (req, res) => {
     });
     
     // Log action
-    // await logAction(req.user.id, 'USER_UPDATE_PROFILE');
+    await logAction(req.user.id, 'USER_UPDATE_PROFILE');
     
     res.status(200).json({
       status: 'success',
