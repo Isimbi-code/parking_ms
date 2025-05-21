@@ -18,133 +18,111 @@ enum Role {
   ADMIN
 }
 
-
-
 enum SpaceStatus {
   AVAILABLE
   UNAVAILABLE
 }
 
-
-
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String
-  email     String    @unique
-  password  String
-  role      Role      @default(PARKING_ATTENDANT)
-  parkings  Parking[]
-  logs      Log[]
-  tickets   Ticket[]
-  carexits  CarExit[]
+  id         Int        @id @default(autoincrement())
+  name       String
+  email      String     @unique
+  password   String
+  role       Role       @default(PARKING_ATTENDANT)
+  parkings   Parking[]
+  logs       Log[]
+  tickets    Ticket[]
+  carexits   CarExit[]
   carentries CarEntry[]
-  bills  Bill[]
-
-
+  bills      Bill[]
 
   @@map("users")
 }
 
-
-model Parking{
-  id         Int         @id @default(autoincrement())
-  code       String      @unique
-  name       String      @unique
-  spaces     Space[]
-  Fee        Int
-  location   String
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id])
-  carentries  CarEntry[]
-  tickets    Ticket[]
-  carexits   CarExit[]
-
-
+model Parking {
+  id       Int       @id @default(autoincrement())
+  code     String    @unique
+  name     String    @unique
+  spaces   Space[]
+  Fee      Int
+  location String
+  userId   Int
+  user     User      @relation(fields: [userId], references: [id])
+  tickets  Ticket[]
+  carexits CarExit[]
 
   @@map("parkings")
 }
 
-model Space{
-  id     Int     @id @default(autoincrement())
-  spaceNumber Int  @unique
-  status     SpaceStatus  @default(AVAILABLE)
-  parkingId  Int
-  parking  Parking  @relation(fields: [parkingId], references: [id])
+model Space {
+  id          Int         @id @default(autoincrement())
+  spaceNumber Int         @unique
+  status      SpaceStatus @default(AVAILABLE)
+  parkingId   Int
+  parking     Parking     @relation(fields: [parkingId], references: [id])
+  CarEntry    CarEntry[]
 
   @@map("spaces")
-
-
-
-
 }
 
 model Bill {
-  id         Int      @id @default(autoincrement())
-  userId     Int
+  id          Int      @id @default(autoincrement())
+  userId      Int
   parkingCode String
-  amount     Int
-  createdAt  DateTime @default(now())
+  amount      Int
+  createdAt   DateTime @default(now())
 
-  user       User     @relation(fields: [userId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
+  carEntryId Int?
+  carEntry   CarEntry? @relation(fields: [carEntryId], references: [id])
 
-
-   @@map("bills")
+  @@map("bills")
 }
 
-
-
-model CarEntry{
-  id         Int         @id @default(autoincrement())
-  plateNumber String    @unique
-  entryDateTime DateTime  @default(now())
-  exitDateTime DateTime
-  chargedAmount Int  @default(0)
-  parkingCode String  
-  parking  Parking  @relation(fields: [parkingCode], references: [code])
-  userId  Int
-  user     User     @relation(fields: [userId], references: [id])
+model CarEntry {
+  id            Int      @id @default(autoincrement())
+  plateNumber   String   @unique
+  entryDateTime DateTime @default(now())
+  exitDateTime  DateTime?
+  chargedAmount Int      @default(0)
+  parkingCode   String
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  tickets       Ticket[]
+  bills         Bill[]
+  spaceId       Int
+  space         Space    @relation(fields: [spaceId], references: [id])
 
   @@map("carentries")
-
-
-
 }
 
-
-
-model CarExit{
-  id         Int         @id @default(autoincrement())
-  plateNumber String    @unique
-  entryDateTime DateTime  @default(now())
-  exitDateTime DateTime
-  chargedAmount Int  @default(0)
-  parkingCode String  
-  parking  Parking  @relation(fields: [parkingCode], references: [code])
-  userId  Int
-  user     User     @relation(fields: [userId], references: [id])
-
-  
+model CarExit {
+  id            Int      @id @default(autoincrement())
+  plateNumber   String   @unique
+  entryDateTime DateTime @default(now())
+  exitDateTime  DateTime
+  chargedAmount Int      @default(0)
+  parkingCode   String
+  parking       Parking  @relation(fields: [parkingCode], references: [code])
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
 
   @@map("carexits")
-
-
-
 }
 
-
-model Ticket{
-  id Int @id @default(autoincrement())
-  userId Int
-  parkingId Int
-  amount Int
-  created_at DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  parking      Parking     @relation(fields: [parkingId], references: [id])
+model Ticket {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  parkingId  Int
+  amount     Int
+  created_at DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id])
+  parking    Parking   @relation(fields: [parkingId], references: [id])
+  carEntryId Int?
+  carEntry   CarEntry? @relation(fields: [carEntryId], references: [id])
 
   @@map("tickets")
-
 }
-
 
 model Log {
   id        Int      @id @default(autoincrement())

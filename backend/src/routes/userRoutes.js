@@ -8,9 +8,12 @@ const authUtils = require('../utils/auth');
 router.use(authUtils.protect);
 
 // Admin only routes
+
+
 router.get('/', authUtils.restrictTo('ADMIN'), userController.getAllUsers);
 
 // User routes
+
 router.patch('/update-profile', userController.updateProfile);
 
 module.exports = router;

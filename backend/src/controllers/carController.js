@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-module.exports.enterCar = async function enterCar(parkingCode, userId) {
+module.exports.enterCar = async function enterCar(parkingCode, userId, plateNumber) {
   // Find the parking lot by code
   const parking = await prisma.parking.findUnique({
     where: { code: parkingCode },
@@ -27,7 +27,11 @@ module.exports.enterCar = async function enterCar(parkingCode, userId) {
   const entry = await prisma.carEntry.create({
     data: {
       userId,
-      parkingId: parking.id,
+      parkingCode: parking.code,
+      plateNumber,
+      spaceId: space.id,
+      chargedAmount: 0,
+      exitDateTime: null,
     },
   });
 
@@ -41,25 +45,18 @@ module.exports.enterCar = async function enterCar(parkingCode, userId) {
   const ticket = await prisma.ticket.create({
     data: {
       userId,
-      parkingCode,
-      amount: parking.fee,
+      parkingId: parking.id,
+      amount: parking.Fee,
+      carEntryId: entry.id
     },
   });
 
-  // Create bill
-  const bill = await prisma.bill.create({
-    data: {
-      userId,
-      parkingCode,
-      amount: ticket.amount,
-    },
-  });
 
-  return { entry, ticket, bill };
+  return { entry, ticket };
 }
 
 
-module.exports.exitCar= async function exitCar(parkingCode, userId) {
+module.exports.exitCar = async function exitCar(parkingCode, userId) {
   // Find the parking lot
   const parking = await prisma.parking.findUnique({
     where: { code: parkingCode },
@@ -76,7 +73,7 @@ module.exports.exitCar= async function exitCar(parkingCode, userId) {
       parkingId: parking.id,
     },
     orderBy: {
-      createdAt: 'desc',
+      entryDateTime: 'desc',
     },
   });
 
@@ -85,33 +82,34 @@ module.exports.exitCar= async function exitCar(parkingCode, userId) {
   }
 
   // Find the space number used (if stored in entry or needs mapping)
-  const space = await prisma.space.findFirst({
+  const space = await prisma.space.findUnique({
     where: {
-      parkingId: parking.id,
-      status: 'UNAVAILABLE',
+      id: entry.spaceId,
     },
   });
 
   if (!space) {
-    throw new Error('Occupied space not found');
+    throw new Error('Space not found');
   }
 
-  const entryTime = carEntry.entryTimeDate;
-  const exitTime = carExit.exitTimeDate;
+  const entryTime = entry.entryDateTime;
+  const exitTime = new Date();
   if (!entryTime || !exitTime) {
     throw new Error('Entry or exit time not found');
   }
   const durationMs = exitTime - entryTime;
   const durationHours = Math.ceil(durationMs / (1000 * 60 * 60)); // Round up to full hours
 
-  const totalFee = durationHours * parking.fee;
+  const totalFee = durationHours * parking.Fee;
 
   // Create car exit
   const exit = await prisma.carExit.create({
     data: {
       userId,
-      parkingId: parking.id,
-      spaceNumber: space.spaceNumber,
+      parkingCode: parking.code,
+      plateNumber: entry.plateNumber, // use actual one
+      chargedAmount: totalFee,
+      exitDateTime: exitTime,
     },
   });
 
@@ -124,23 +122,24 @@ module.exports.exitCar= async function exitCar(parkingCode, userId) {
   // Update the ticket and bill
   await prisma.ticket.updateMany({
     where: {
-      userId,
-      parkingCode,
+      carEntryId: entry.id,
     },
     data: {
       amount: totalFee,
     },
   });
 
-  await prisma.bill.updateMany({
-    where: {
+
+  // Create bill
+  const bill = await prisma.bill.create({
+    data: {
       userId,
       parkingCode,
-    },
-    data: {
-      amount: totalFee,
+      amount: ticket.amount,
+      carEntryId: entry.id
     },
   });
 
-  return { exit, totalFee, durationHours };
+
+  return { exit, totalFee, durationHours, bill };
 }

@@ -7,14 +7,15 @@ const { logAction } = require('../utils/logger');
 exports.createParking = async (req, res) => {
   try {
     const { code, name, Fee, location } = req.body;
+    const userId = req.user.id;
 
     // Validate
-    if (!code || !name || !Fee  || !location) {
+    if (!code || !name || !Fee || !location) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const parking = await prisma.parking.create({
-      data: { code, name, Fee, location }
+      data: { code, name, Fee, location, userId }
     });
 
     res.status(201).json({ status: 'success', data: { parking } });
@@ -102,7 +103,7 @@ exports.createSpace = async (req, res) => {
 
 exports.getAllAvailableSpaces = async (req, res) => {
   try {
-    
+
     const { parkingId } = req.query;
 
     if (!parkingId) {
@@ -111,11 +112,11 @@ exports.getAllAvailableSpaces = async (req, res) => {
 
     const availableSpaces = await prisma.space.findMany({
       where: {
-      status: 'AVAILABLE',
-      parkingId: parseInt(parkingId),
+        status: 'AVAILABLE',
+        parkingId: parseInt(parkingId),
       },
       include: {
-      parking: true, // Optional: only if you want to return related parking data
+        parking: true, // Optional: only if you want to return related parking data
       },
     });
 

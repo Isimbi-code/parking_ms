@@ -22,10 +22,13 @@ const AuthForm = () => {
       if (isLogin) {
         const { data } = await login(formData)
         localStorage.setItem('token', data.token)
+        toast.success('Login successful!')
+        navigate('/', { state: { email: formData.email } })
+
       } else {
         await register(formData)
-        toast.success('Registration successful! Check your email for OTP.')
-        navigate('/', { state: { email: formData.email } })
+        toast.success('Registration successful!')
+        navigate('/login', { state: { email: formData.email } })
       }
     } catch (error) {
       toast.error(error.response?.data?.error || 'Something went wrong')

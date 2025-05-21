@@ -12,6 +12,8 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
+
+
 // Database connection
 const prismaClient = new PrismaClient();
 
@@ -31,6 +33,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/cars', carRoutes);
 app.use('/api/parkings', parkingRoutes);
+
+app.get('/', (req, res) => {
+  res.send('Welcome to the Smart Parking System API');
+});
 
 
 
