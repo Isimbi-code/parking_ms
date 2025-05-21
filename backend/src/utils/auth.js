@@ -10,10 +10,7 @@ const generateToken = (userId, role) => {
     });
 };
 
-// Verify JWT token
-const verifyToken = (token) => {
-    return jwt.verify(token, process.env.JWT_SECRET);
-};
+
 
 // Hash password
 const hashPassword = async (password) => {
@@ -65,7 +62,6 @@ const restrictTo = (...roles) => {
 
 module.exports = {
     generateToken,
-    verifyToken,
     hashPassword,
     comparePasswords,
     protect,

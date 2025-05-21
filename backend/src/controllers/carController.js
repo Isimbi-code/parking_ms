@@ -70,7 +70,7 @@ module.exports.exitCar = async function exitCar(parkingCode, userId) {
   const entry = await prisma.carEntry.findFirst({
     where: {
       userId,
-      parkingId: parking.id,
+      parkingCode: parking.code,
     },
     orderBy: {
       entryDateTime: 'desc',
@@ -135,7 +135,7 @@ module.exports.exitCar = async function exitCar(parkingCode, userId) {
     data: {
       userId,
       parkingCode,
-      amount: ticket.amount,
+      amount: totalFee,
       carEntryId: entry.id
     },
   });

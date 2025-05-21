@@ -80,25 +80,25 @@ model Bill {
 }
 
 model CarEntry {
-  id            Int      @id @default(autoincrement())
-  plateNumber   String   @unique
-  entryDateTime DateTime @default(now())
+  id            Int       @id @default(autoincrement())
+  plateNumber   String
+  entryDateTime DateTime  @default(now())
   exitDateTime  DateTime?
-  chargedAmount Int      @default(0)
+  chargedAmount Int       @default(0)
   parkingCode   String
   userId        Int
-  user          User     @relation(fields: [userId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
   tickets       Ticket[]
   bills         Bill[]
   spaceId       Int
-  space         Space    @relation(fields: [spaceId], references: [id])
+  space         Space     @relation(fields: [spaceId], references: [id])
 
   @@map("carentries")
 }
 
 model CarExit {
   id            Int      @id @default(autoincrement())
-  plateNumber   String   @unique
+  plateNumber   String
   entryDateTime DateTime @default(now())
   exitDateTime  DateTime
   chargedAmount Int      @default(0)
