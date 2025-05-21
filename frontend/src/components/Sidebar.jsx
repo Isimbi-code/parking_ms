@@ -4,9 +4,7 @@ import { getUserFromToken } from '../utils/auth';
 const Sidebar = () => {
   const user = getUserFromToken();
 
-  const commonLinks = [
-    { to: '/dashboard/overview', label: 'Overview' },
-  ];
+
 
   const userLinks = [
     { to: '/dashboard/parkings', label: 'My Parkings' },
@@ -25,7 +23,7 @@ const Sidebar = () => {
     <div className="w-64 h-screen bg-black text-white p-6">
       <h2 className="text-xl font-bold mb-6">Smart Parking</h2>
       <nav className="space-y-4">
-        {[...commonLinks, ...roleLinks].map((link) => (
+        {[...roleLinks].map((link) => (
           <Link
             key={link.to}
             to={link.to}

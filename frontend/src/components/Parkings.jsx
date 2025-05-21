@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getParkings, createParking } from '../services/api';
 import { toast } from 'react-hot-toast';
+import { getUserFromToken } from '../utils/auth';
 
 const Parkings = () => {
   const [parkings, setParkings] = useState([]);
@@ -9,8 +10,7 @@ const Parkings = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5); // You can adjust this number
 
-  // Simulate logged-in user (replace with your context or auth logic)
-  const user = JSON.parse(localStorage.getItem('user')); // { role: "admin" }
+  const user = getUserFromToken();
 
   const fetchParkings = async () => {
     try {
@@ -32,7 +32,13 @@ const Parkings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await createParking(form);
+
+        // Validate Fee is a number
+      if (isNaN(form.Fee)) {
+      toast.error('Fee must be a valid number');
+      return;
+     }  
+     await createParking({...form, Fee: Number(form.Fee) });
       toast.success('Parking added successfully!');
       setForm({ code: '', name: '', Fee: '', location: '' });
       setRefresh((r) => !r); // trigger refresh
@@ -80,7 +86,7 @@ const Parkings = () => {
           </table>
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {totalPages >= 1 && (
             <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button

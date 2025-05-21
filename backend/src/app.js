@@ -29,6 +29,7 @@ const carRoutes = require('./routes/carRoutes');
 const parkingRoutes = require('./routes/parkingRoutes');
 
 
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/cars', carRoutes);

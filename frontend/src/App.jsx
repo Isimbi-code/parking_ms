@@ -7,7 +7,6 @@ import AuthForm from './components/AuthForm';
 import { Toaster } from 'react-hot-toast';
 import CarEntry from './components/CarEntry';
 import CarExit from './components/CarExit';
-import Overview from './components/Overview';
 import Parkings from './components/Parkings';
 import Spaces from './components/Spaces';
 import DashboardLayout from './components/DashboardLayout';
@@ -27,13 +26,6 @@ const App = () => {
         </ProtectedRoute>
       } />
 
-      <Route path="/dashboard/overview" element={
-        <ProtectedRoute>
-          <DashboardLayout>
-            <Overview />
-          </DashboardLayout>
-        </ProtectedRoute>
-      } />
 
       <Route path="/dashboard/parkings" element={
         <ProtectedRoute>

@@ -74,10 +74,16 @@ exports.createSpace = async (req, res) => {
   try {
     const { spaceNumber, parkingId } = req.body;
 
+    const spaceNum = parseInt(spaceNumber, 10);
+
+    if (isNaN(spaceNum)) {
+      return res.status(400).json({ error: "spaceNumber must be a valid number" });
+    }
+
 
     const request = await prisma.space.create({
       data: {
-        spaceNumber,
+        spaceNumber: spaceNum,
         parkingId: parseInt(parkingId),
       },
       include: {
@@ -112,7 +118,6 @@ exports.getAllAvailableSpaces = async (req, res) => {
 
     const availableSpaces = await prisma.space.findMany({
       where: {
-        status: 'AVAILABLE',
         parkingId: parseInt(parkingId),
       },
       include: {

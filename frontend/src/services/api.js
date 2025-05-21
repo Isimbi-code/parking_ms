@@ -35,7 +35,17 @@ export const getMe = () => API.get('/auth/me')
 
 // Parking functions
 export const getParkings = (params) => API.get('/parkings', { params })
-export const getAvailableSpaces = (params) => API.get('/parkings/spaces', { params })
+
+export const getAvailableSpaces = (parkingId) => {
+    if (!parkingId) {
+        throw new Error('parkingId parameter is required');
+    }
+
+    return API.get('/parkings/spaces', {
+        params: { parkingId }
+    });
+};
+
 export const createParking = (data) => API.post('/parkings', data)
 export const createSpace = (data) => API.post('/parkings/spaces', data)
 
